@@ -54,9 +54,9 @@ W_ins = 3.0
 fuel_residual = 0.2
 
 
-##########################
-# HASA MODEL (INCOMPLETE)#
-##########################
+###########################
+# HASA MODEL (INCOMPLETE) #
+###########################
 
 
 # Note that all outputs for functions are in imperial units
