@@ -130,6 +130,14 @@ TPS_weight_metric = TPS_weight*0.453592  # Convert to kg
 print(f"TPS Weight in kg: {TPS_weight_metric:.2f} kg")
 ###################
 # Landing Gear Weight
+# Assuming Residual Fuel is 20% (20% fuel is left)
+# The 20% residual fuel is arbitrary, 
+# so you can change this however you like.
+fuel_residual = 0.2
+W_land = W_gtot - ((1.0-fuel_residual)*W_prop)
+
+landing_gear_weight = 0.030 * W_land
+landing_gear_weight_metric = landing_gear_weight*0.453592
 print(f"Landing Gear Weight in kg: {landing_gear_weight_metric:.2f} kg")
 
 ####Total Structure Weight
@@ -138,6 +146,7 @@ structure_weight_metric  = structure_weight*0.453592
 
 print("")
 print(f"Total Structure Weight in kg: {structure_weight_metric:.2f} kg")
+print("")
 
 
 
@@ -194,15 +203,7 @@ electrical_weight_metric = electrical_weight*0.453592
 
 print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
 
-####Landing Gear Weight
-# Assuming Residual Fuel is 20% (20% fuel is left)
-# The 20% residual fuel is arbitrary, 
-# so you can change this however you like.
-fuel_residual = 0.2
-W_land = W_gtot - ((1.0-fuel_residual)*W_prop)
 
-landing_gear_weight = 0.030 * W_land
-landing_gear_weight_metric = landing_gear_weight*0.453592
 
 
 
