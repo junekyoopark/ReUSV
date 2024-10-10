@@ -29,19 +29,16 @@ sweep_angle = 50  # sweep angle (λ_1/2) in degrees
 # ULF = 3.75       # ultimate load factor
 # mf = 1.12        # mass factor (adjust as per specific data)
 
-
 # Inputs for tail weights 
 # Unsure what to do with a V tail like the X-37B,
 # So just guestimated a vertical and horizontal planform area.
 S_wfh = 25.0  # planform area of horizontal stabilizer in square feet (estimate)
 S_wfv = 25.0  # planform area of vertical stabilizer in square feet (estimate)
 
-
 # TPS Surface Areas (estimate)
 # 100 ft^2 for HRSI (under wing, etc.)
 # 20 ft^2 for RCC (nose and leading edge)
 # 119 ft^2 for FRSI (top part of spacecraft)
-
 HRSI_area = 100
 RCC_area = 20
 FRSI_area = 119
@@ -55,6 +52,12 @@ W_ins = 3.0
 # The 20% residual fuel is arbitrary, 
 # so you can change this however you like.
 fuel_residual = 0.2
+
+
+##########################
+# HASA MODEL (INCOMPLETE)#
+##########################
+
 
 # Note that all outputs for functions are in imperial units
 # Fuselage weight
@@ -119,13 +122,13 @@ def structure_weight_func(W_f, W_w, W_hor, W_vert, W_tps, W_gear):
 
 
 
-
+###### INCOMPLETE STUFF ######
 
 ####Engine Weight
 ####Tank Weight
 ####Total propulsion weight
 
-
+###############################
 
 
 
@@ -154,9 +157,9 @@ def electrical_weight_func(W_gtot, L_f):
     W_eps = 1.167 * (phi**1.0)
     return W_eps
 
-#####
-# RUN THE MODEL
-#####
+#################
+# RUN THE MODEL #
+#################
 # Calculate the fuselage weight
 fuselage_weight = fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf)
 fuselage_weight_metric = fuselage_weight*0.453592
