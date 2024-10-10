@@ -55,7 +55,8 @@ def wing_weight_func(W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t_c, sweep_ang
 W_gtot = 11000  # total gross weight in lbs #11000
 W_prop = 3306.934   # propellant weight in lbs #3306.934
 S_ref = 80   # reference wing area in square feet #59.35220204 for wing interrupted by fuselage)
-AR = (14.92782**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) (14.92782**2 / 59.35220204)
+W_span = 14.92782 #ft
+AR = (W_span**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) (14.92782**2 / 59.35220204)
 taper_ratio = 383/4059  # taper ratio (λ) (length_tip/length_root) (383/4059)
 t_c = 154/3426      # thickness to chord ratio (t/c) (154/3426)
 sweep_angle = 50  # sweep angle (λ_1/2) in degrees
@@ -176,7 +177,6 @@ def hydraulics_weight_func(S_ref, q_max, L_f, W_span):
     
     return W_hydr
 
-W_span = 14.92782 #ft
 
 hydraulics_weight = hydraulics_weight_func(S_ref, q_max, L_f, W_span)
 hydraulics_weight_metric = hydraulics_weight*0.453592
