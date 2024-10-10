@@ -1,2 +1,9 @@
-Script for HASA Weight Analysis.
-The geometry of the spacecraft should be predefined.
+# Modified HASA Weight Analysis Test
+
+Modified Hypersonic Aerospace Sizing Analysis (HASA) Test.
+
+Original HASA Paper can be found here: https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
+
+Various sources for modified HASA can be found here: https://s-space.snu.ac.kr/handle/10371/196316")
+
+For the sample script in `hasa.py`, X-37B dimensions are used. When certain dimensions aren't available online, Estimated quantities derived from a fairly accurate CAD model are used.
