@@ -20,18 +20,19 @@ mf = 1.12       # mass factor (mass factor of space shuttle)
 # Inputs for W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t/c, sweep_angle, and mf
 W_gtot = 11000  # total gross weight in lbs #11000
 W_prop = 3306.934   # propellant weight in lbs #3306.934
-S_ref = 80   # reference wing area in square feet #59.35220204 for wing interrupted by fuselage)
+S_ref = 80   # reference wing area in square feet #(59.35220204 for wing interrupted by fuselage)
 W_span = 14.92782 #ft
 AR = (W_span**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) (14.92782**2 / 59.35220204)
 taper_ratio = 383/4059  # taper ratio (λ) (length_tip/length_root) (383/4059)
 t_c = 154/3426      # thickness to chord ratio (t/c) (154/3426)
 sweep_angle = 50  # sweep angle (λ_1/2) in degrees
-# ULF = 3.75       # ultimate load factor
-# mf = 1.12        # mass factor (adjust as per specific data)
+# ULF = 3.75       # ultimate load factor (same as above)
+# mf = 1.12        # mass factor (same as above)
 
 # Inputs for tail weights 
 # Unsure what to do with a V tail like the X-37B,
 # So just guestimated a vertical and horizontal planform area.
+# If I have more time, Maybe I'll do a projection to each plane and get the surface area
 S_wfh = 25.0  # planform area of horizontal stabilizer in square feet (estimate)
 S_wfv = 25.0  # planform area of vertical stabilizer in square feet (estimate)
 
@@ -44,7 +45,7 @@ RCC_area = 20
 FRSI_area = 119
 
 ## TPS UNIT WEIGHT PER UNIT AREA ARE UNKNOWN, 
-# SO WE USE THE AVERAGE USED BY THE SPACE SHUTTLE##
+# SO WE USE THE AVERAGE OF 3.0 USED BY THE SPACE SHUTTLE##
 W_ins = 3.0
 
 # Landing Gear Assumption
@@ -62,6 +63,7 @@ fuel_residual = 0.2
 # Note that all outputs for functions are in imperial units
 # Fuselage weight
 def fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf, eta_vol=0.7):
+    # Note that eta_vol is typically 0.7 and the HASA model isn't sensitive to it
     # Equation for body equivalent diameter (D_be)
     D_be = math.sqrt((4 * V_tot) / (math.pi * L_f * eta_vol))
     
