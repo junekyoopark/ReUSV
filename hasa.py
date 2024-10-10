@@ -2,8 +2,9 @@ import math
 
 print("")
 print("ORIGINAL HASA TEST")
+print("Refer to https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
+print("X-37B dimensions are used.")
 print("")
-
 
 # Calculate fuselage weight in imperial units
 def fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf, eta_vol=0.7):
@@ -29,9 +30,8 @@ mf = 1.12       # mass factor (mass factor of space shuttle)
 fuselage_weight = fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf)
 fuselage_weight_metric = fuselage_weight*0.453592
 
-print(f"Fuselage Weight: {fuselage_weight:.2f} lbs")
+# print(f"Fuselage Weight: {fuselage_weight:.2f} lbs")
 print(f"Fuselage Weight in kg: {fuselage_weight_metric:.2f} kg")
-
 ############################
 
 # Calculate wing weight in imperial units
@@ -64,9 +64,8 @@ sweep_angle = 50  # sweep angle (λ_1/2) in degrees
 wing_weight = wing_weight_func(W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t_c, sweep_angle, mf)
 wing_weight_metric = wing_weight * 0.453592
 
-print(f"Wing Weight: {wing_weight:.2f} lbs")
+# print(f"Wing Weight: {wing_weight:.2f} lbs")
 print(f"Wing Weight in kg: {wing_weight_metric:.2f} kg")
-
 ###############
 
 # Define a function to calculate horizontal stabilizer (tail) weight
@@ -86,7 +85,7 @@ def vertical_stabilizer_weight_func(S_wfv):
     
     return W_finv
 
-# Example usage with test inputs for tail weights
+# Inputs for tail weights
 S_wfh = 25.0  # planform area of horizontal stabilizer in square feet (estimate)
 S_wfv = 25.0  # planform area of vertical stabilizer in square feet (estimate)
 
@@ -99,15 +98,33 @@ vertical_weight = vertical_stabilizer_weight_func(S_wfv)
 horizontal_weight_metric = horizontal_weight * 0.453592  # Convert to kg
 vertical_weight_metric = vertical_weight * 0.453592  # Convert to kg
 
-print(f"Horizontal Stabilizer Weight: {horizontal_weight:.2f} lbs")
-print(f"Horizontal Stabilizer Weight in kg: {horizontal_weight_metric:.2f} kg")
+total_tail_wing_weight_metric = horizontal_weight_metric+vertical_weight_metric
 
-print(f"Vertical Stabilizer Weight: {vertical_weight:.2f} lbs")
-print(f"Vertical Stabilizer Weight in kg: {vertical_weight_metric:.2f} kg")
+# print(f"Horizontal Stabilizer Weight: {horizontal_weight:.2f} lbs")
+# print(f"Horizontal Stabilizer Weight in kg: {horizontal_weight_metric:.2f} kg")
 
+# print(f"Vertical Stabilizer Weight: {vertical_weight:.2f} lbs")
+# print(f"Vertical Stabilizer Weight in kg: {vertical_weight_metric:.2f} kg")
 
-print("")
-print("")
-print("")
-print("")
-print("")
+print(f"Total Tail Wing Weight in kg: {total_tail_wing_weight_metric:.2f} kg")
+####################
+
+# TPS Surface Areas (estimate)
+# 100 ft^2 for HRSI (under wing, etc.)
+# 20 ft^2 for RCC (nose and leading edge)
+# 119 ft^2 for FRSI (top part of spacecraft)
+
+HRSI_area = 100
+RCC_area = 20
+FRSI_area = 119
+
+## TPS UNIT WEIGHT PER UNIT AREA ARE UNKNOWN, 
+# SO WE USE THE AVERAGE USED BY THE SPACE SHUTTLE##
+W_ins = 3.0
+
+TPS_weight = W_ins * (HRSI_area + RCC_area + FRSI_area)
+TPS_weight_metric = TPS_weight*0.453592  # Convert to kg
+# print(f"TPS Weight: {TPS_weight:.2f} lbs")
+print(f"TPS Weight in kg: {TPS_weight_metric:.2f} kg")
+###################
+
