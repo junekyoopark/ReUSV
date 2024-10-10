@@ -207,5 +207,5 @@ print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
 
 
 
-####Total weight without payload
+####Total weight without payload (W_no_payload)
 ####Allowable payload weight = W_gtot - W_no_payload
