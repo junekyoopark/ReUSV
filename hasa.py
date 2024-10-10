@@ -1,8 +1,9 @@
 import math
 
 print("")
-print("ORIGINAL HASA TEST")
-print("Refer to https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
+print("MODIFIED HASA TEST by JKP")
+print("ORIGINAL HASA: https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
+print("Modified HASA: https://s-space.snu.ac.kr/handle/10371/196316")
 print("X-37B dimensions are used.")
 print("")
 
@@ -27,6 +28,7 @@ V_tot = 604.23394760467  # ft^3 (total volume) (X-37B)
 mf = 1.12       # mass factor (mass factor of space shuttle)
 
 # Calculate the fuselage weight using inputs above
+
 fuselage_weight = fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf)
 fuselage_weight_metric = fuselage_weight*0.453592
 
@@ -127,4 +129,82 @@ TPS_weight_metric = TPS_weight*0.453592  # Convert to kg
 # print(f"TPS Weight: {TPS_weight:.2f} lbs")
 print(f"TPS Weight in kg: {TPS_weight_metric:.2f} kg")
 ###################
+# Landing Gear Weight
+print(f"Landing Gear Weight in kg: {landing_gear_weight_metric:.2f} kg")
 
+####Total Structure Weight
+structure_weight = fuselage_weight + wing_weight + horizontal_weight + vertical_weight + TPS_weight + landing_gear_weight
+structure_weight_metric  = structure_weight*0.453592
+
+print("")
+print(f"Total Structure Weight in kg: {structure_weight_metric:.2f} kg")
+
+
+
+
+
+
+
+####Engine Weight
+####Tank Weight
+####Total propulsion weight
+
+
+
+
+
+
+
+
+
+# Hydraulics Weight
+def hydraulics_weight_func(S_ref, q_max, L_f, W_span):
+    # Calculate the psi term
+    psi = abs(((S_ref*q_max/1000)**0.334) * (L_f+W_span)**0.5)
+    
+    # Equation for hydraulics weight (W_hydr)
+    W_hydr = 2.64 * (psi ** 1.0)
+    
+    return W_hydr
+
+W_span = 14.92782 #ft
+
+hydraulics_weight = hydraulics_weight_func(S_ref, q_max, L_f, W_span)
+hydraulics_weight_metric = hydraulics_weight*0.453592
+
+print(f"Hydraulics Weight in kg: {hydraulics_weight_metric:.2f} kg")
+
+# Avionics Weight
+# This is MODIFIED HASA!!!
+# AVIONICS WEIGHT IS REDUCED TO 69% of ORINAL HASA!
+# This is due to advanced avionics
+avionics_weight = 0.69*66.37*(W_gtot**0.361)
+avionics_weight_metric = avionics_weight*0.453592
+
+print(f"Avionics Weight in kg: {avionics_weight_metric:.2f} kg")
+
+# Electrical System Weight
+def electrical_weight_func(W_gtot, L_f):
+    phi = abs((W_gtot**0.5) * (L_f**0.25))
+    W_eps = 1.167 * (phi**1.0)
+    return W_eps
+
+electrical_weight = electrical_weight_func(W_gtot,L_f)
+electrical_weight_metric = electrical_weight*0.453592
+
+print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
+
+####Landing Gear Weight
+# Assuming Residual Fuel is 20% (20% fuel is left)
+# The 20% residual fuel is arbitrary, 
+# so you can change this however you like.
+fuel_residual = 0.2
+W_land = W_gtot - ((1.0-fuel_residual)*W_prop)
+
+landing_gear_weight = 0.030 * W_land
+landing_gear_weight_metric = landing_gear_weight*0.453592
+
+
+
+####Total weight without payload
+####Allowable payload weight = W_gtot - W_no_payload
