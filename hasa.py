@@ -154,18 +154,9 @@ def electrical_weight_func(W_gtot, L_f):
     W_eps = 1.167 * (phi**1.0)
     return W_eps
 
-
-
-
-
-
-
-
-
-
-
-
-
+#####
+# RUN THE MODEL
+#####
 # Calculate the fuselage weight
 fuselage_weight = fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf)
 fuselage_weight_metric = fuselage_weight*0.453592
