@@ -4,7 +4,8 @@ print("")
 print("MODIFIED HASA TEST by JKP")
 print("ORIGINAL HASA: https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
 print("Modified HASA: https://s-space.snu.ac.kr/handle/10371/196316")
-print("X-37B dimensions are used.")
+print("X-37B dimensions are used; if certain dimensions aren't available online,")
+print("they are estimated from a fairly accurate CAD model.")
 print("")
 
 # Calculate fuselage weight in imperial units
