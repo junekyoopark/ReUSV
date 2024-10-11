@@ -12,34 +12,35 @@ print("")
 # Inputs for fuselage length (L_f), ULF, q_max, S_btot, V_tot, and mf in imperial units
 L_f = 27.5  # ft (fuselage length) (X-37B)
 ULF = 3.75   # ultimate load factor (given in MERS by GATech)
-q_max = 120  # lb per ft^2 (psf) (maximum dynamic pressure) (X-37B)
-S_btot = 926.66504777 # ft^2 (fuselage wetted surface area) (X-37B)
-V_tot = 604.23394760467  # ft^3 (total volume) (X-37B)
+q_max = 300  # lb per ft^2 (psf) (maximum dynamic pressure) (Suitable number for RLVs like X-33, X-37, X-40, etc.)
+# source: "High-fidelity real-time trajectory optimization for reusable launch vehicles" by Bollino, Kevin P.
+S_btot = 926.66504777 # ft^2 (fuselage wetted surface area) (estimate from CAD model of X-37B)
+V_tot = 604.23394760467  # ft^3 (total volume) (estimate from CAD model of X-37B)
 mf = 1.12       # mass factor (mass factor of space shuttle)
 
 # Inputs for W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t/c, sweep_angle, and mf
-W_gtot = 11000  # total gross weight in lbs #11000
-W_prop = 3306.934   # propellant weight in lbs #3306.934
-S_ref = 80   # reference wing area in square feet #(59.35220204 for wing interrupted by fuselage)
-W_span = 14.92782 #ft
-AR = (W_span**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) (14.92782**2 / 59.35220204)
-taper_ratio = 383/4059  # taper ratio (λ) (length_tip/length_root) (383/4059)
-t_c = 154/3426      # thickness to chord ratio (t/c) (154/3426)
-sweep_angle = 50  # sweep angle (λ_1/2) in degrees
+W_gtot = 11000  # total gross weight in lbs #X-37B: 11000lb 
+W_prop = 3306.934   # propellant weight in lbs #arbitrarily set from SNU paper 
+S_ref = 80   # reference wing area in square feet # estimate from CAD model (59.35220204 for wing interrupted by fuselage)
+W_span = 14.92782 #ft 
+AR = (W_span**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) estimate from CAD model (14.92782**2 / 59.35220204)
+taper_ratio = 383/4059  # taper ratio (λ) (length_tip/length_root) estimate from CAD model (383/4059) 
+t_c = 154/3426      # thickness to chord ratio (t/c) estimate from CAD model (154/3426)
+sweep_angle = 50  # sweep angle (λ_1/2) in degrees (estimate from CAD model)
 # ULF = 3.75       # ultimate load factor (same as above)
 # mf = 1.12        # mass factor (same as above)
 
-# Inputs for tail weights 
+# Inputs for tail weights
 # Unsure what to do with a V tail like the X-37B,
 # So just guestimated a vertical and horizontal planform area.
 # If I have more time, Maybe I'll do a projection to each plane and get the surface area
-S_wfh = 25.0  # planform area of horizontal stabilizer in square feet (estimate)
-S_wfv = 25.0  # planform area of vertical stabilizer in square feet (estimate)
+S_wfh = 25.0  # planform area of horizontal stabilizer in square feet (estimate from CAD model)
+S_wfv = 25.0  # planform area of vertical stabilizer in square feet (estimate from CAD model)
 
 # TPS Surface Areas (estimate)
-# 100 ft^2 for HRSI (under wing, etc.)
-# 20 ft^2 for RCC (nose and leading edge)
-# 119 ft^2 for FRSI (top part of spacecraft)
+# 100 ft^2 for HRSI (under wing, etc.) estimate from CAD model of X-37B
+# 20 ft^2 for RCC (nose and leading edge) estimate from CAD model of X-37B
+# 119 ft^2 for FRSI (top part of spacecraft) estimate from CAD model of X-37B
 HRSI_area = 100
 RCC_area = 20
 FRSI_area = 119
