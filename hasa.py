@@ -115,6 +115,7 @@ def tps_weight_func(W_ins, HRSI_area, RCC_area, FRSI_area):
 #Landing gear weight
 def landing_gear_weight_func(W_gtot, fuel_residual, W_prop):
     W_land = W_gtot - ((1.0-fuel_residual)*W_prop)
+    # print(W_land)
     W_gear = 0.030 * W_land
     return W_gear
 
