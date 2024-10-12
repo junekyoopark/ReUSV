@@ -8,7 +8,7 @@ density_lox = 71.0  # Liquid Oxygen (LOX)
 density_lh2 = 4.4   # Liquid Hydrogen (LH2)
 
 # Inputs
-W_entry = 8500  # Entry weight in lbs
+W_entry = 8800  # Entry weight in lbs
 L_f = 27.5       # Fuselage length in feet
 Isp_oms = 312    # Specific impulse for OMS (in seconds) 246
 Isp_rcs = 312    # Specific impulse for RCS (in seconds)
@@ -118,3 +118,10 @@ print(f"Volume of OMS Fuel (LH2): {V_oms_fuel:.2f} ft³")
 V_rcs_ox, V_rcs_fuel = calculate_lox_lh2_volumes(W_rcs_prop_total)
 print(f"Volume of RCS Oxygen (LOX): {V_rcs_ox:.2f} ft³")
 print(f"Volume of RCS Fuel (LH2): {V_rcs_fuel:.2f} ft³")
+
+W_prop_total_metric = W_prop_total*0.453592
+W_ox_total_metric = W_ox_total*0.453592
+W_fuel_total_metric = W_fuel_total*0.453592
+print(f"Total propellant weight in kg: {W_prop_total_metric:.2f} kg")
+print(f"Total oxygen weight in kg: {W_ox_total_metric:.2f} kg")
+print(f"Total fuel weight in kg: {W_fuel_total_metric:.2f} kg")

@@ -20,7 +20,7 @@ mf = 1.12       # mass factor (mass factor of space shuttle)
 
 # Inputs for W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t/c, sweep_angle, and mf
 W_gtot = 11000  # total gross weight in lbs #X-37B: 11000lb 
-W_prop = 3306.934   # propellant weight in lbs #arbitrarily set from SNU paper 
+W_prop = 2865.13   # propellant weight in lbs #arbitrarily set from SNU paper (3306.934lbs)
 S_ref = 80   # reference wing area in square feet # estimate from CAD model (59.35220204 for wing interrupted by fuselage)
 W_span = 14.92782 #ft 
 AR = (W_span**2) / 59.35220204      # aspect ratio (wing_span^2 / wing_area) estimate from CAD model (14.92782**2 / 59.35220204)
@@ -56,19 +56,19 @@ W_ins = 3.0
 fuel_residual = 0.2
 
 # Inputs for OMS engine weight
-T_req_oms = 531.25  # Required OMS thrust in lbs (From Propulsion Analysis)
+T_req_oms = 550.00  # Required OMS thrust in lbs (From Propulsion Analysis)
 P_oms_press = 3000  # OMS pressurization pressure in psia (from MERS by GATech)
-V_oms_ox = 30.69  # Volume of OMS oxygen in cubic feet (From Propulsion Analysis)
-V_oms_fuel = 82.53  # Volume of OMS fuel in cubic feet (From Propulsion Analysis)
+V_oms_ox = 31.77  # Volume of OMS oxygen in cubic feet (From Propulsion Analysis)
+V_oms_fuel = 85.44  # Volume of OMS fuel in cubic feet (From Propulsion Analysis)
 V_oms_press = 0.24 * (V_oms_ox + V_oms_fuel)  # OMS pressurization volume (From MERS by GATech)
 
 # Inputs for RCS engine weight
 N_pf, N_vf, N_pa, N_va = 14, 2, 24, 4  # Number of primary/vernier thrusters (front/aft) (Space Shuttle quantity)
-T_req_qp, T_req_qv = 9.66, 0.56  # Required primary and vernier thrust (lbs) (From Propulsion Analysis)
+T_req_qp, T_req_qv = 10.01, 0.58  # Required primary and vernier thrust (lbs) (From Propulsion Analysis)
 R_p, R_v = 39.5, 9.4  # Thrust-to-weight ratios for primary/vernier thrusters (from MERS by GATech)
 P_rcs_press = 3000  # RCS pressurization pressure in psia (from MERS by GATech)
-V_rcs_ox = 2.72 # Volume of RCS oxygen(cubic feet) (From Propulsion Analysis)
-V_rcs_fuel = 7.32  # Volume of RCS fuel (cubic feet) (From Propulsion Analysis)
+V_rcs_ox = 2.82 # Volume of RCS oxygen(cubic feet) (From Propulsion Analysis)
+V_rcs_fuel = 7.58  # Volume of RCS fuel (cubic feet) (From Propulsion Analysis)
 V_rcs_press = 0.24 * (V_rcs_ox + V_rcs_fuel)  # RCS pressurization volume (From MERS by GATech)
 
 # Inputs for tank weight
@@ -79,8 +79,8 @@ V_oms_tnk = (V_oms_ox/(1-0.06) + V_oms_fuel/(1-0.06))  # Volume of OMS tank in c
 P_rcs_tnk = 195  # Pressure of RCS tank in psia (from MERS by GATech)
 V_rcs_tnk = (V_rcs_ox/(1-0.06) + V_rcs_fuel/(1-0.06))   # Volume of RCS tank in cubic feet
 
-# Additional input for total weight (from propulsion analysis)
-W_prop = 2767.46 #lbs (from Propulsion Analysis)
+# # Additional input for total weight (from propulsion analysis)
+# W_prop = 2865.13 #lbs (from Propulsion Analysis)
 
 ###########################
 # HASA MODEL (INCOMPLETE) #
@@ -141,7 +141,7 @@ def tps_weight_func(W_ins, HRSI_area, RCC_area, FRSI_area):
 #Landing gear weight
 def landing_gear_weight_func(W_gtot, fuel_residual, W_prop):
     W_land = W_gtot - ((1.0-fuel_residual)*W_prop)
-    # print(W_land)
+    print(W_land)
     W_gear = 0.030 * W_land
     return W_gear
 
@@ -313,6 +313,7 @@ W_sub_metric = W_sub*0.453592
 print(f"Hydraulics Weight in kg: {hydraulics_weight_metric:.2f} kg")
 print(f"Avionics Weight in kg: {avionics_weight_metric:.2f} kg")
 print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
+print(f"Total Subsystem Weight in kg: {W_sub_metric:.2f} kg")
 print("")
 
 # Calculations for OMS
