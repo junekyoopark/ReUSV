@@ -55,6 +55,32 @@ W_ins = 3.0
 # so you can change this however you like.
 fuel_residual = 0.2
 
+# Inputs for OMS engine weight
+T_req_oms = 531.25  # Required OMS thrust in lbs (From Propulsion Analysis)
+P_oms_press = 3000  # OMS pressurization pressure in psia (from MERS by GATech)
+V_oms_ox = 30.69  # Volume of OMS oxygen in cubic feet (From Propulsion Analysis)
+V_oms_fuel = 82.53  # Volume of OMS fuel in cubic feet (From Propulsion Analysis)
+V_oms_press = 0.24 * (V_oms_ox + V_oms_fuel)  # OMS pressurization volume (From MERS by GATech)
+
+# Inputs for RCS engine weight
+N_pf, N_vf, N_pa, N_va = 14, 2, 24, 4  # Number of primary/vernier thrusters (front/aft) (Space Shuttle quantity)
+T_req_qp, T_req_qv = 9.66, 0.56  # Required primary and vernier thrust (lbs) (From Propulsion Analysis)
+R_p, R_v = 39.5, 9.4  # Thrust-to-weight ratios for primary/vernier thrusters (from MERS by GATech)
+P_rcs_press = 3000  # RCS pressurization pressure in psia (from MERS by GATech)
+V_rcs_ox = 2.72 # Volume of RCS oxygen(cubic feet) (From Propulsion Analysis)
+V_rcs_fuel = 7.32  # Volume of RCS fuel (cubic feet) (From Propulsion Analysis)
+V_rcs_press = 0.24 * (V_rcs_ox + V_rcs_fuel)  # RCS pressurization volume (From MERS by GATech)
+
+# Inputs for tank weight
+ullage_lox = 0.06 #LOX 6% value is from X-34 "Transient Analysis of X-34 Pressurization System"
+ullage_lh2 = 0.06 #No source for this, but MERS by GATech says typically ~4 to 5% so 6% should be a reasonable value
+P_oms_tnk = 195  # Pressure of OMS tank in psia (from MERS by GATech)
+V_oms_tnk = (V_oms_ox/(1-0.06) + V_oms_fuel/(1-0.06))  # Volume of OMS tank in cubic feet
+P_rcs_tnk = 195  # Pressure of RCS tank in psia (from MERS by GATech)
+V_rcs_tnk = (V_rcs_ox/(1-0.06) + V_rcs_fuel/(1-0.06))   # Volume of RCS tank in cubic feet
+
+# Additional input for total weight (from propulsion analysis)
+W_prop = 2767.46 #lbs (from Propulsion Analysis)
 
 ###########################
 # HASA MODEL (INCOMPLETE) #
@@ -128,13 +154,79 @@ def structure_weight_func(W_f, W_w, W_hor, W_vert, W_tps, W_gear):
 
 ###### INCOMPLETE STUFF ######
 
-####Engine Weight
-####Tank Weight
-####Total propulsion weight
+####Engine Weight (From MERS by GATech)
+# OMS Engine Weight Calculation
+def oms_engine_weight_func(T_req_oms, R_oms=22): #R_oms chosen as 22; includes mounts, supports, igniters, etc. (MERS by GATech)
+    """Calculates the OMS engine weight."""
+    W_oms_eng = T_req_oms / R_oms
+    return W_oms_eng
 
-###############################
+# OMS Pressurization System Weight Calculation
+def oms_pressurization_weight_func(P_oms_press, V_oms_press, V_oms_ox, V_oms_fuel, TRF=0.0):
+    """Calculates the OMS pressurization system weight."""
+    W_oms_press = (0.0143 * P_oms_press * V_oms_press * (1 - TRF) +
+                   0.617 * (V_oms_ox + V_oms_fuel))
+    return W_oms_press
 
+# OMS Installation Weight Calculation
+def oms_installation_weight_func(W_oms_eng):
+    """Calculates the OMS installation weight."""
+    W_oms_install = 0.74 * W_oms_eng
+    return W_oms_install
 
+# Total OMS Weight Calculation
+def total_oms_weight_func(W_oms_eng, W_oms_install, W_oms_press):
+    """Calculates the total OMS weight."""
+    W_oms = W_oms_eng + W_oms_install + W_oms_press
+    return W_oms
+
+# RCS Thruster Weight Calculations
+def rcs_thruster_weight_func(N, T_req, R):
+    """Calculates the weight of RCS thrusters."""
+    return N * T_req / R
+
+# RCS Pressurization System Weight Calculation
+def rcs_pressurization_weight_func(P_rcs_press, V_rcs_press, V_rcs_ox, V_rcs_fuel, TRF=0.0):
+    """Calculates the RCS pressurization system weight."""
+    W_rcs_press = (0.0143 * P_rcs_press * V_rcs_press * (1 - TRF) +
+                   0.617 * (V_rcs_ox + V_rcs_fuel))
+    return W_rcs_press
+
+# RCS Installation Weight Calculation
+def rcs_installation_weight_func(W_rcs_thrusters):
+    """Calculates the RCS installation weight."""
+    W_rcs_install = 0.74 * sum(W_rcs_thrusters)
+    return W_rcs_install
+
+# Total RCS Weight Calculation
+def total_rcs_weight_func(W_rcs_thrusters, W_rcs_install, W_rcs_press):
+    """Calculates the total RCS weight."""
+    W_rcs = sum(W_rcs_thrusters) + W_rcs_install + W_rcs_press
+    return W_rcs
+
+# Total Engine Weight Calculation
+def total_engine_weight_func(W_oms, W_rcs):
+    """Calculates the total engine weight."""
+    W_eng = W_oms + W_rcs
+    return W_eng
+
+# Tank Weight Calculation for OMS and RCS
+def tank_weight_func(P_tnk, V_tnk):
+    """Calculates the weight of the tank."""
+    return 0.01295 * P_tnk * V_tnk
+
+# Total Tank Weight Calculation
+def total_tank_weight_func(P_oms_tnk, V_oms_tnk, P_rcs_tnk, V_rcs_tnk):
+    """Calculates the total weight of all tanks (OMS + RCS)."""
+    W_oms_tnk = tank_weight_func(P_oms_tnk, V_oms_tnk)
+    W_rcs_tnk = tank_weight_func(P_rcs_tnk, V_rcs_tnk)
+    W_tnk = W_oms_tnk + W_rcs_tnk
+    return W_oms_tnk, W_rcs_tnk, W_tnk
+
+# Total Propulsion Weight Calculation
+def total_propulsion_weight_func(W_tnk, W_eng):
+    """Calculates the total propulsion weight."""
+    return W_tnk + W_eng
 
 # Hydraulics Weight
 def hydraulics_weight_func(S_ref, q_max, L_f, W_span):
@@ -160,6 +252,12 @@ def electrical_weight_func(W_gtot, L_f):
     phi = abs((W_gtot**0.5) * (L_f**0.25))
     W_eps = 1.167 * (phi**1.0)
     return W_eps
+
+
+####Total weight without payload (W_no_payload)
+def total_weight_without_payload_func(W_str, W_pros, W_sub, W_prop):
+    W_gtot_no_payload = W_str + W_pros + W_sub + W_prop
+    return W_gtot_no_payload
 
 #################
 # RUN THE MODEL #
@@ -194,7 +292,6 @@ landing_gear_weight_metric = landing_gear_weight*0.453592
 # Total STRUCTURE weight
 structure_weight = structure_weight_func(fuselage_weight, wing_weight, horizontal_weight, vertical_weight, TPS_weight, landing_gear_weight)
 structure_weight_metric  = structure_weight*0.453592
-
 print(f"Fuselage Weight in kg: {fuselage_weight_metric:.2f} kg")
 print(f"Wing Weight in kg: {wing_weight_metric:.2f} kg")
 print(f"Total Tail Wing Weight in kg: {total_tail_wing_weight_metric:.2f} kg")
@@ -210,11 +307,79 @@ avionics_weight = avionics_weight_func(W_gtot)
 avionics_weight_metric = avionics_weight*0.453592
 electrical_weight = electrical_weight_func(W_gtot,L_f)
 electrical_weight_metric = electrical_weight*0.453592
-
+# Total subsystems weight
+W_sub = hydraulics_weight + avionics_weight + electrical_weight
+W_sub_metric = W_sub*0.453592
 print(f"Hydraulics Weight in kg: {hydraulics_weight_metric:.2f} kg")
 print(f"Avionics Weight in kg: {avionics_weight_metric:.2f} kg")
 print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
+print("")
 
+# Calculations for OMS
+W_oms_eng = oms_engine_weight_func(T_req_oms)
+W_oms_press = oms_pressurization_weight_func(P_oms_press, V_oms_press, V_oms_ox, V_oms_fuel)
+W_oms_install = oms_installation_weight_func(W_oms_eng)
+W_oms = total_oms_weight_func(W_oms_eng, W_oms_install, W_oms_press)
+W_oms_eng_metric = W_oms_eng*0.453592
+W_oms_press_metric = W_oms_press*0.453592
+W_oms_install_metric = W_oms_install*0.453592
+W_oms_metric = W_oms*0.453592
+print(f"OMS Engine Weight in kg: {W_oms_eng_metric:.2f} kg")
+print(f"OMS Pressurization Weight in kg: {W_oms_press_metric:.2f} kg")
+print(f"OMS Installation Weight in kg: {W_oms_install_metric:.2f} kg")
+print(f"Total OMS Weight in kg: {W_oms_metric:.2f} kg")
+print("")
+
+# Calculations for RCS
+W_rcs_pf = rcs_thruster_weight_func(N_pf, T_req_qp, R_p)
+W_rcs_vf = rcs_thruster_weight_func(N_vf, T_req_qv, R_v)
+W_rcs_pa = rcs_thruster_weight_func(N_pa, T_req_qp, R_p)
+W_rcs_va = rcs_thruster_weight_func(N_va, T_req_qv, R_v)
+W_rcs_thrusters = [W_rcs_pf, W_rcs_vf, W_rcs_pa, W_rcs_va]
+W_rcs_press = rcs_pressurization_weight_func(P_rcs_press, V_rcs_press, V_rcs_ox, V_rcs_fuel)
+W_rcs_install = rcs_installation_weight_func(W_rcs_thrusters)
+W_rcs = total_rcs_weight_func(W_rcs_thrusters, W_rcs_install, W_rcs_press)
+# print(f"RCS Thruster Weights: {W_rcs_thrusters}")
+
+W_rcs_press_metric = W_rcs_press*0.453592
+W_rcs_install_metric = W_rcs_install*0.453592
+W_rcs_metric = W_rcs*0.453592
+
+print(f"RCS Pressurization Weight in kg: {W_rcs_press_metric:.2f} kg")
+print(f"RCS Installation Weight in kg: {W_rcs_install_metric:.2f} kg")
+print(f"Total RCS Weight in kg: {W_rcs_metric:.2f} kg")
+print("")
+
+# Total Engine Weight
+W_eng = total_engine_weight_func(W_oms, W_rcs)
+W_eng_metric = W_eng*0.453592
+print(f"Total Engine Weight in kg: {W_eng_metric:.2f} kg")
+print("")
+
+# Calculate Tank Weights
+W_oms_tnk, W_rcs_tnk, W_tnk = total_tank_weight_func(P_oms_tnk, V_oms_tnk, P_rcs_tnk, V_rcs_tnk)
+W_oms_tnk_metric = W_oms_tnk*0.453592
+W_rcs_tnk_metric = W_rcs_tnk*0.453592
+W_tnk_metric = W_tnk*0.453592
+
+print(f"OMS Tank Weight in kg: {W_oms_tnk_metric:.2f} kg")
+print(f"RCS Tank Weight in kg: {W_rcs_tnk_metric:.2f} kg")
+print(f"Total Tank Weight in kg: {W_tnk_metric:.2f} kg")
+print("")
+
+# Calculate Total Propulsion Weight
+W_pros = total_propulsion_weight_func(W_tnk, W_eng)
+W_pros_metric = W_pros*0.453592
+print(f"Total Propulsion Weight in kg: {W_pros_metric:.2f} kg")
+print("")
+
+# Calculate total weight WITHOUT payload
+W_gtot_without_payload = total_weight_without_payload_func(structure_weight, W_pros, W_sub, W_prop)
+W_gtot_without_payload_metric = W_gtot_without_payload*0.453592
 ####Total weight without payload (W_no_payload)
-####Allowable payload weight = W_gtot - W_no_payload
+print(f"Total Weight WITHOUT Payload in kg: {W_gtot_without_payload_metric:.2f} kg")
 
+# Calculate allowable payload weight
+W_allow_payload = W_gtot - W_gtot_without_payload
+W_allow_payload_metric = W_allow_payload*0.453592
+print(f"Allowable Payload in kg: {W_allow_payload_metric:.2f} kg")

@@ -3,6 +3,20 @@ import math
 # Constants
 g = 32.174  # gravitational constant in ft/s^2
 
+# Densities in lb/ft³
+density_lox = 71.0  # Liquid Oxygen (LOX)
+density_lh2 = 4.4   # Liquid Hydrogen (LH2)
+
+# Inputs
+W_entry = 8500  # Entry weight in lbs
+L_f = 27.5       # Fuselage length in feet
+Isp_oms = 312    # Specific impulse for OMS (in seconds) 246
+Isp_rcs = 312    # Specific impulse for RCS (in seconds)
+deltaV_oms_orbit = 2177.4934  # Delta V for orbit in fps (paper says 50, calculated by ours for one year is 2177.4934)
+deltaV_oms_deorbit = 293.0675853  # Delta V for de-orbit in fps (Calculated by 임태욱-GNC)
+deltaV_rcs_entry = 40     # Delta V for RCS entry in fps
+deltaV_rcs_orbit = 200    # Delta V for RCS orbit in fps
+
 # Define the function to calculate the required thrusts
 def thrust_requirements(W_entry, L_f):
     T_req_oms = W_entry / 16
@@ -47,15 +61,28 @@ def total_propellant_weights(W_oms_prop_total, W_rcs_prop_total):
     W_fuel_total = W_oms_fuel + W_rcs_fuel
     return W_prop_total, W_ox_total, W_fuel_total
 
-# Inputs
-W_entry = 8500  # Entry weight in lbs
-L_f = 27.5       # Fuselage length in feet
-Isp_oms = 246    # Specific impulse for OMS (in seconds) 246
-Isp_rcs = 265    # Specific impulse for RCS (in seconds)
-deltaV_oms_orbit = 2177.4934  # Delta V for orbit in fps (paper says 50, calculated by ours for one year is 2177.4934)
-deltaV_oms_deorbit = 293.0675853  # Delta V for de-orbit in fps (Calculated by 임태욱-GNC)
-deltaV_rcs_entry = 40     # Delta V for RCS entry in fps
-deltaV_rcs_orbit = 200    # Delta V for RCS orbit in fps
+# Define function to calculate volume of LOX and LH2
+def calculate_lox_lh2_volumes(W_prop):
+    """
+    Calculate the volume of LOX and LH2 given the total propellant weight.
+
+    Parameters:
+    W_prop : float
+        Total propellant weight in lbs.
+
+    Returns:
+    tuple : (V_ox, V_fuel)
+        Volumes of LOX and LH2 in cubic feet.
+    """
+    # Calculate masses
+    W_ox = (6 / 7) * W_prop  # Mass of oxygen in lbs
+    W_fuel = (1 / 7) * W_prop  # Mass of hydrogen in lbs
+
+    # Calculate volumes
+    V_ox = W_ox / density_lox  # Volume of LOX in ft³
+    V_fuel = W_fuel / density_lh2  # Volume of LH2 in ft³
+
+    return V_ox, V_fuel
 
 # Calculate thrust requirements
 T_req_oms, T_req_qp, T_req_qv = thrust_requirements(W_entry, L_f)
@@ -82,3 +109,12 @@ W_prop_total, W_ox_total, W_fuel_total = total_propellant_weights(W_oms_prop_tot
 print(f"Total propellant weight: {W_prop_total:.2f} lbs")
 print(f"Total oxygen weight: {W_ox_total:.2f} lbs")
 print(f"Total fuel weight: {W_fuel_total:.2f} lbs")
+
+# Calculate volume of oxygen and volume of fuel
+V_oms_ox, V_oms_fuel = calculate_lox_lh2_volumes(W_oms_prop_total)
+print(f"Volume of OMS Oxygen (LOX): {V_oms_ox:.2f} ft³")
+print(f"Volume of OMS Fuel (LH2): {V_oms_fuel:.2f} ft³")
+
+V_rcs_ox, V_rcs_fuel = calculate_lox_lh2_volumes(W_rcs_prop_total)
+print(f"Volume of RCS Oxygen (LOX): {V_rcs_ox:.2f} ft³")
+print(f"Volume of RCS Fuel (LH2): {V_rcs_fuel:.2f} ft³")
