@@ -8,4 +8,4 @@ Various sources for modified HASA can be found here: https://s-space.snu.ac.kr/h
 
 For the sample script in `hasa.py`, X-37B dimensions are used. When certain dimensions aren't available online, estimated quantities derived from a fairly accurate CAD model are used.
 
-The total weight is available online; the propellant weight is deduced from a final report for a graduate course at University of Colorado Boulder (ASEN 5053 Rocket Propulsion): https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/final_project_johnson.pdf
+The total weight is available online; the propellant weight is deduced from a final project for a graduate course at University of Colorado Boulder (ASEN 5053 Rocket Propulsion): https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/final_project_johnson.pdf
