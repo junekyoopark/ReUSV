@@ -2,6 +2,7 @@ import math
 
 print("")
 print("MODIFIED HASA TEST by 박준규 (SMS)")
+print("For the most updated version of the source code, refer to https://github.com/junekyoopark/ReUSV")
 print("ORIGINAL HASA: https://ntrs.nasa.gov/api/citations/19890005736/downloads/19890005736.pdf")
 print("Modified HASA: https://s-space.snu.ac.kr/handle/10371/196316")
 print("X-37B dimensions are used; if certain dimensions aren't available online,")
