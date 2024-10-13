@@ -49,6 +49,10 @@ FRSI_area = 119
 # SO WE USE THE AVERAGE OF 3.0 USED FOR THE SPACE SHUTTLE##
 W_ins = 3.0
 
+# Inputs for surface control actuators
+W_entry = 8800 #lbs (Note that the same is used in Propulsion Analysis)
+
+
 # Landing Gear Assumption
 # Assumes Residual Fuel is 20% (20% fuel is left)
 # The 20% residual fuel is arbitrary, 
@@ -78,6 +82,9 @@ P_oms_tnk = 195  # Pressure of OMS tank in psia (from MERS by GATech)
 V_oms_tnk = (V_oms_ox/(1-0.06) + V_oms_fuel/(1-0.06))  # Volume of OMS tank in cubic feet
 P_rcs_tnk = 195  # Pressure of RCS tank in psia (from MERS by GATech)
 V_rcs_tnk = (V_rcs_ox/(1-0.06) + V_rcs_fuel/(1-0.06))   # Volume of RCS tank in cubic feet
+print(V_oms_tnk)
+
+print(V_rcs_tnk)
 
 # # Additional input for total weight (from propulsion analysis)
 # W_prop = 2865.13 #lbs (from Propulsion Analysis)
@@ -228,15 +235,20 @@ def total_propulsion_weight_func(W_tnk, W_eng):
     """Calculates the total propulsion weight."""
     return W_tnk + W_eng
 
-# Hydraulics Weight
-def hydraulics_weight_func(S_ref, q_max, L_f, W_span):
-    # Calculate the psi term
-    psi = abs(((S_ref*q_max/1000)**0.334) * (L_f+W_span)**0.5)
+# # Hydraulics Weight is removed since X-37B uses electromechanical actuators instead.
+# def hydraulics_weight_func(S_ref, q_max, L_f, W_span):
+#     # Calculate the psi term
+#     psi = abs(((S_ref*q_max/1000)**0.334) * (L_f+W_span)**0.5)
     
-    # Equation for hydraulics weight (W_hydr)
-    W_hydr = 2.64 * (psi ** 1.0)
+#     # Equation for hydraulics weight (W_hydr)
+#     W_hydr = 2.64 * (psi ** 1.0)
     
-    return W_hydr
+#     return W_hydr
+
+# Electromechanical Actuators
+def surface_control_actuators_weight_func(W_entry):
+    W_sca = 0.0048*W_entry
+    return W_sca
 
 # Avionics Weight
 # This is MODIFIED HASA!!!
@@ -264,11 +276,11 @@ def total_weight_without_payload_func(W_str, W_pros, W_sub, W_prop):
 #################
 # Calculate the fuselage weight
 fuselage_weight = fuselage_weight_func(L_f, ULF, q_max, S_btot, V_tot, mf)
-fuselage_weight_metric = fuselage_weight*0.453592
+fuselage_weight_metric = fuselage_weight*0.45359237
 
 # Calculate the wing weight using inputs above
 wing_weight = wing_weight_func(W_gtot, W_prop, ULF, S_ref, AR, taper_ratio, t_c, sweep_angle, mf)
-wing_weight_metric = wing_weight * 0.453592
+wing_weight_metric = wing_weight * 0.45359237
 
 # Calculate the horizontal stabilizer weight
 horizontal_weight = horizontal_stabilizer_weight_func(W_gtot, S_ref, S_wfh, q_max)
@@ -277,21 +289,21 @@ horizontal_weight = horizontal_stabilizer_weight_func(W_gtot, S_ref, S_wfh, q_ma
 vertical_weight = vertical_stabilizer_weight_func(S_wfv)
 
 # Calculate the total tail wing weight
-horizontal_weight_metric = horizontal_weight * 0.453592  # Convert to kg
-vertical_weight_metric = vertical_weight * 0.453592  # Convert to kg
+horizontal_weight_metric = horizontal_weight * 0.45359237  # Convert to kg
+vertical_weight_metric = vertical_weight * 0.45359237  # Convert to kg
 total_tail_wing_weight_metric = horizontal_weight_metric+vertical_weight_metric
 
 # Calculate the TPS weight
 TPS_weight = tps_weight_func(W_ins, HRSI_area, RCC_area, FRSI_area)
-TPS_weight_metric = TPS_weight*0.453592  # Convert to kg
+TPS_weight_metric = TPS_weight*0.45359237  # Convert to kg
 
 # Calculate the landing gear weight
 landing_gear_weight = landing_gear_weight_func(W_gtot, fuel_residual, W_prop)
-landing_gear_weight_metric = landing_gear_weight*0.453592
+landing_gear_weight_metric = landing_gear_weight*0.45359237
 
 # Total STRUCTURE weight
 structure_weight = structure_weight_func(fuselage_weight, wing_weight, horizontal_weight, vertical_weight, TPS_weight, landing_gear_weight)
-structure_weight_metric  = structure_weight*0.453592
+structure_weight_metric  = structure_weight*0.45359237
 print(f"Fuselage Weight in kg: {fuselage_weight_metric:.2f} kg")
 print(f"Wing Weight in kg: {wing_weight_metric:.2f} kg")
 print(f"Total Tail Wing Weight in kg: {total_tail_wing_weight_metric:.2f} kg")
@@ -301,16 +313,18 @@ print("")
 print(f"Total Structure Weight in kg: {structure_weight_metric:.2f} kg")
 print("")
 
-hydraulics_weight = hydraulics_weight_func(S_ref, q_max, L_f, W_span)
-hydraulics_weight_metric = hydraulics_weight*0.453592
+# hydraulics_weight = hydraulics_weight_func(S_ref, q_max, L_f, W_span)
+# hydraulics_weight_metric = hydraulics_weight*0.45359237
+surface_actuators_weight = surface_control_actuators_weight_func(W_entry)
+surface_actuators_weight_metric = surface_actuators_weight*0.45359237
 avionics_weight = avionics_weight_func(W_gtot)
-avionics_weight_metric = avionics_weight*0.453592
+avionics_weight_metric = avionics_weight*0.45359237
 electrical_weight = electrical_weight_func(W_gtot,L_f)
-electrical_weight_metric = electrical_weight*0.453592
+electrical_weight_metric = electrical_weight*0.45359237
 # Total subsystems weight
-W_sub = hydraulics_weight + avionics_weight + electrical_weight
-W_sub_metric = W_sub*0.453592
-print(f"Hydraulics Weight in kg: {hydraulics_weight_metric:.2f} kg")
+W_sub = surface_actuators_weight + avionics_weight + electrical_weight
+W_sub_metric = W_sub*0.45359237
+print(f"Surface Actuators Weight in kg: {surface_actuators_weight_metric:.2f} kg")
 print(f"Avionics Weight in kg: {avionics_weight_metric:.2f} kg")
 print(f"Electrical System Weight in kg: {electrical_weight_metric:.2f} kg")
 print(f"Total Subsystem Weight in kg: {W_sub_metric:.2f} kg")
@@ -321,10 +335,10 @@ W_oms_eng = oms_engine_weight_func(T_req_oms)
 W_oms_press = oms_pressurization_weight_func(P_oms_press, V_oms_press, V_oms_ox, V_oms_fuel)
 W_oms_install = oms_installation_weight_func(W_oms_eng)
 W_oms = total_oms_weight_func(W_oms_eng, W_oms_install, W_oms_press)
-W_oms_eng_metric = W_oms_eng*0.453592
-W_oms_press_metric = W_oms_press*0.453592
-W_oms_install_metric = W_oms_install*0.453592
-W_oms_metric = W_oms*0.453592
+W_oms_eng_metric = W_oms_eng*0.45359237
+W_oms_press_metric = W_oms_press*0.45359237
+W_oms_install_metric = W_oms_install*0.45359237
+W_oms_metric = W_oms*0.45359237
 print(f"OMS Engine Weight in kg: {W_oms_eng_metric:.2f} kg")
 print(f"OMS Pressurization Weight in kg: {W_oms_press_metric:.2f} kg")
 print(f"OMS Installation Weight in kg: {W_oms_install_metric:.2f} kg")
@@ -342,9 +356,9 @@ W_rcs_install = rcs_installation_weight_func(W_rcs_thrusters)
 W_rcs = total_rcs_weight_func(W_rcs_thrusters, W_rcs_install, W_rcs_press)
 # print(f"RCS Thruster Weights: {W_rcs_thrusters}")
 
-W_rcs_press_metric = W_rcs_press*0.453592
-W_rcs_install_metric = W_rcs_install*0.453592
-W_rcs_metric = W_rcs*0.453592
+W_rcs_press_metric = W_rcs_press*0.45359237
+W_rcs_install_metric = W_rcs_install*0.45359237
+W_rcs_metric = W_rcs*0.45359237
 
 print(f"RCS Pressurization Weight in kg: {W_rcs_press_metric:.2f} kg")
 print(f"RCS Installation Weight in kg: {W_rcs_install_metric:.2f} kg")
@@ -353,15 +367,15 @@ print("")
 
 # Total Engine Weight
 W_eng = total_engine_weight_func(W_oms, W_rcs)
-W_eng_metric = W_eng*0.453592
+W_eng_metric = W_eng*0.45359237
 print(f"Total Engine Weight in kg: {W_eng_metric:.2f} kg")
 print("")
 
 # Calculate Tank Weights
 W_oms_tnk, W_rcs_tnk, W_tnk = total_tank_weight_func(P_oms_tnk, V_oms_tnk, P_rcs_tnk, V_rcs_tnk)
-W_oms_tnk_metric = W_oms_tnk*0.453592
-W_rcs_tnk_metric = W_rcs_tnk*0.453592
-W_tnk_metric = W_tnk*0.453592
+W_oms_tnk_metric = W_oms_tnk*0.45359237
+W_rcs_tnk_metric = W_rcs_tnk*0.45359237
+W_tnk_metric = W_tnk*0.45359237
 
 print(f"OMS Tank Weight in kg: {W_oms_tnk_metric:.2f} kg")
 print(f"RCS Tank Weight in kg: {W_rcs_tnk_metric:.2f} kg")
@@ -370,17 +384,17 @@ print("")
 
 # Calculate Total Propulsion Weight
 W_pros = total_propulsion_weight_func(W_tnk, W_eng)
-W_pros_metric = W_pros*0.453592
+W_pros_metric = W_pros*0.45359237
 print(f"Total Propulsion Weight in kg: {W_pros_metric:.2f} kg")
 print("")
 
 # Calculate total weight WITHOUT payload
 W_gtot_without_payload = total_weight_without_payload_func(structure_weight, W_pros, W_sub, W_prop)
-W_gtot_without_payload_metric = W_gtot_without_payload*0.453592
+W_gtot_without_payload_metric = W_gtot_without_payload*0.45359237
 ####Total weight without payload (W_no_payload)
 print(f"Total Weight WITHOUT Payload in kg: {W_gtot_without_payload_metric:.2f} kg")
 
 # Calculate allowable payload weight
 W_allow_payload = W_gtot - W_gtot_without_payload
-W_allow_payload_metric = W_allow_payload*0.453592
+W_allow_payload_metric = W_allow_payload*0.45359237
 print(f"Allowable Payload in kg: {W_allow_payload_metric:.2f} kg")

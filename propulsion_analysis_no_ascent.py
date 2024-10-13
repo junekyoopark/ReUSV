@@ -1,5 +1,9 @@
 import math
 
+# Propulsion Analysis is done using Mass Estimating Relationship (MERs) Database by Reuben R. Rohrschneider at Georgia Institute of Technology. 
+# "Development of a Mass Estimating Relationship Database for Launch Vehicle Conceptual Design"
+# Script by JKP
+
 # Constants
 g = 32.174  # gravitational constant in ft/s^2
 
@@ -10,12 +14,12 @@ density_lh2 = 4.4   # Liquid Hydrogen (LH2)
 # Inputs
 W_entry = 8800  # Entry weight in lbs
 L_f = 27.5       # Fuselage length in feet
-Isp_oms = 312    # Specific impulse for OMS (in seconds) 246
-Isp_rcs = 312    # Specific impulse for RCS (in seconds)
+Isp_oms = 312    # Specific impulse for OMS (in seconds) #From 이현호 (PS)
+Isp_rcs = 312    # Specific impulse for RCS (in seconds) #From 이현호 (PS)
 deltaV_oms_orbit = 2177.4934  # Delta V for orbit in fps (paper says 50, calculated by ours for one year is 2177.4934)
 deltaV_oms_deorbit = 293.0675853  # Delta V for de-orbit in fps (Calculated by 임태욱-GNC)
-deltaV_rcs_entry = 40     # Delta V for RCS entry in fps
-deltaV_rcs_orbit = 200    # Delta V for RCS orbit in fps
+deltaV_rcs_entry = 40     # Delta V for RCS entry in fps #from Space Shuttle (mentioned in MERS by GATech)
+deltaV_rcs_orbit = 200    # Delta V for RCS orbit in fps #from Space Shuttle (mentioned in MERS by GATech)
 
 # Define the function to calculate the required thrusts
 def thrust_requirements(W_entry, L_f):
@@ -119,9 +123,9 @@ V_rcs_ox, V_rcs_fuel = calculate_lox_lh2_volumes(W_rcs_prop_total)
 print(f"Volume of RCS Oxygen (LOX): {V_rcs_ox:.2f} ft³")
 print(f"Volume of RCS Fuel (LH2): {V_rcs_fuel:.2f} ft³")
 
-W_prop_total_metric = W_prop_total*0.453592
-W_ox_total_metric = W_ox_total*0.453592
-W_fuel_total_metric = W_fuel_total*0.453592
+W_prop_total_metric = W_prop_total*0.45359237
+W_ox_total_metric = W_ox_total*0.45359237
+W_fuel_total_metric = W_fuel_total*0.45359237
 print(f"Total propellant weight in kg: {W_prop_total_metric:.2f} kg")
 print(f"Total oxygen weight in kg: {W_ox_total_metric:.2f} kg")
 print(f"Total fuel weight in kg: {W_fuel_total_metric:.2f} kg")
