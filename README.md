@@ -13,4 +13,4 @@ For the sample script in `hasa.py`, X-37B dimensions are used. When certain dime
 The total weight is available online; the propellant weight is deduced from a final project for a graduate course at University of Colorado Boulder (ASEN 5053 Rocket Propulsion): https://www.colorado.edu/faculty/kantha/sites/default/files/attached-files/final_project_johnson.pdf
 
 ## Layout Optimization
-Based on the amazing Aerosandbox library: https://github.com/peterdsharpe/AeroSandbox
+Based on the amazing AeroSandbox library: https://github.com/peterdsharpe/AeroSandbox
