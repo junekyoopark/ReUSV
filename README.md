@@ -14,3 +14,5 @@ The total weight is available online; the propellant weight is deduced from a fi
 
 ## Layout Optimization
 Based on the amazing AeroSandbox library: https://github.com/peterdsharpe/AeroSandbox
+
+[Result of layout optimization (test toy problem results for now)](images/layout_optimization_test.png)
