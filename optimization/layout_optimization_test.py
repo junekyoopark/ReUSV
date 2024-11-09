@@ -4,10 +4,19 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # Parameters
+# Parameters for the cylinder
+R_cyl = 5  # Radius of the cylinder
+H_cyl = 20  # Height of the cylinder
 R = 10  # Radius of the large sphere
 C = np.array([0, 0, 0])  # Center of the large sphere at origin for simplicity
-num_small_spheres = 5  # Number of smaller spheres
-radii = [1, 1, 1, 1.1, 3]  # Radii of each small sphere
+num_small_boxes = 5  # Number of smaller boxes
+dimensions = [
+    np.array([1, 1, 1]),  # Dimensions of each box (width, length, height)
+    np.array([1, 1, 1]),
+    np.array([1, 1, 1]),
+    np.array([1.1, 1.1, 1.1]),
+    np.array([2, 2, 8])
+]
 opti = asb.Opti()
 
 # Initialize centers with initial guesses for optimization
@@ -19,19 +28,38 @@ centers = [
     opti.variable(init_guess=np.array([5, 5, 7]))
 ]
 
-# Constraints
-for i in range(num_small_spheres):
-    dist_to_large_sphere_center_sq = sum((centers[i][k] - C[k]) ** 2 for k in range(3))
-    opti.subject_to(dist_to_large_sphere_center_sq <= (R - radii[i]) ** 2)
+for i in range(num_small_boxes):
+    # Radial distance constraint in the xy-plane, considering the half-widths of the box in x and y directions
+    half_width_x = dimensions[i][0] / 2
+    half_width_y = dimensions[i][1] / 2
+    
+    # Calculate the radial distance from the cylinder axis (x^2 + y^2) and ensure the box fits within the cylinder
+    dist_to_cylinder_axis_sq = (centers[i][0] ** 2 + centers[i][1] ** 2)
+    max_allowed_distance = R_cyl - max(half_width_x, half_width_y)
+    opti.subject_to(dist_to_cylinder_axis_sq <= max_allowed_distance ** 2)
 
-for i in range(num_small_spheres):
-    for j in range(i + 1, num_small_spheres):
-        dist_between_spheres = np.linalg.norm(centers[i] - centers[j])
-        opti.subject_to(dist_between_spheres - (radii[i] + radii[j]) >= 0)
+    # Height constraint along the z-axis, considering the half-height of the box
+    half_height_z = dimensions[i][2] / 2
+    opti.subject_to(centers[i][2] >= -H_cyl / 2 + half_height_z)
+    opti.subject_to(centers[i][2] <= H_cyl / 2 - half_height_z)
+
+
+for i in range(num_small_boxes):
+    for j in range(i + 1, num_small_boxes):
+        # Half-dimensions of each box
+        half_dim_i = dimensions[i] / 2
+        half_dim_j = dimensions[j] / 2
+
+        # Constraint to prevent overlap along each axis
+        for axis in range(3):  # 0 for x, 1 for y, 2 for z
+            center_diff = np.fabs(centers[i][axis] - centers[j][axis])
+            min_separation = half_dim_i[axis] + half_dim_j[axis]
+            opti.subject_to(center_diff >= min_separation)
+
 
 # Objective function to maximize the distance between small spheres
 total_distance = sum(
-    np.linalg.norm(centers[i] - centers[j]) for i in range(num_small_spheres) for j in range(i + 1, num_small_spheres)
+    np.linalg.norm(centers[i] - centers[j]) for i in range(num_small_boxes) for j in range(i + 1, num_small_boxes)
 )
 opti.minimize(total_distance)
 
@@ -53,51 +81,65 @@ optimized_centers = [sol.value(center) for center in centers]
 ###############################################
 ###############################################
 
-# Create a figure with two subplots
+# Updated drawing part for a cylinder boundary
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # Plot convergence of the objective function on the first subplot
 ax1.plot(objective_values, marker='o')
 ax1.set_xlabel("Iteration")
-ax1.set_ylabel("Total Distance Between Sphere Centers")
+ax1.set_ylabel("Total Distance Between Box Centers")
 ax1.set_title("Convergence of Objective Function")
 
-# 3D Plot of spheres in the second subplot
+# 3D Plot of boxes in the second subplot
 ax2 = fig.add_subplot(122, projection='3d')
 
-# Function to plot a sphere
-def plot_sphere(ax, center, radius, color='b', alpha=0.3):
-    u = np.linspace(0, 2 * np.pi, 100)
-    v = np.linspace(0, np.pi, 50)
-    x = center[0] + radius * np.outer(np.cos(u), np.sin(v))
-    y = center[1] + radius * np.outer(np.sin(u), np.sin(v))
-    z = center[2] + radius * np.outer(np.ones(np.size(u)), np.cos(v))
-    ax.plot_surface(x, y, z, color=color, alpha=alpha)
+# Function to plot a cylinder boundary
+def plot_cylinder(ax, center, radius, height, color='gray', alpha=0.1):
+    z = np.linspace(-height / 2, height / 2, 50)
+    theta = np.linspace(0, 2 * np.pi, 100)
+    theta, z = np.meshgrid(theta, z)
+    x = radius * np.cos(theta) + center[0]
+    y = radius * np.sin(theta) + center[1]
+    ax.plot_surface(x, y, z, color=color, alpha=alpha, rstride=5, cstride=5, edgecolor='none')
 
-# Plot the large sphere
-plot_sphere(ax2, C, R, color='gray', alpha=0.1)
+# Plot the cylinder boundary
+plot_cylinder(ax2, C, R_cyl, H_cyl, color='gray', alpha=0.1)
 
-# Plot each small sphere at initial positions in red
+# Function to plot a box
+def plot_box(ax, center, dimensions, color='b', alpha=0.3):
+    w, l, h = dimensions
+    corners = np.array([
+        [center[0] - w / 2, center[1] - l / 2, center[2] - h / 2],
+        [center[0] - w / 2, center[1] + l / 2, center[2] - h / 2],
+        [center[0] + w / 2, center[1] - l / 2, center[2] - h / 2],
+        [center[0] + w / 2, center[1] + l / 2, center[2] - h / 2],
+        [center[0] - w / 2, center[1] - l / 2, center[2] + h / 2],
+        [center[0] - w / 2, center[1] + l / 2, center[2] + h / 2],
+        [center[0] + w / 2, center[1] - l / 2, center[2] + h / 2],
+        [center[0] + w / 2, center[1] + l / 2, center[2] + h / 2]
+    ])
+    ax.plot3D(*zip(*corners[[0, 1, 3, 2, 0]]), color=color)
+    ax.plot3D(*zip(*corners[[4, 5, 7, 6, 4]]), color=color)
+    for start, end in zip(corners[:4], corners[4:]):
+        ax.plot3D(*zip(start, end), color=color)
+
+# Plot each small box at initial positions in red
 initial_centers = [np.zeros(3), np.ones(3), np.array([4, 4, 4]), np.array([5, 4, 5]), np.array([5, 5, 7])]
-for center, radius in zip(initial_centers, radii):
-    plot_sphere(ax2, center, radius, color='red', alpha=0.3)
+for center, dim in zip(initial_centers, dimensions):
+    plot_box(ax2, center, dim, color='red', alpha=0.3)
 
-# Plot each small sphere at optimized positions in blue
-for center, radius in zip(optimized_centers, radii):
-    plot_sphere(ax2, center, radius, color='blue', alpha=0.5)
+# Plot each small box at optimized positions in blue
+for center, dim in zip(optimized_centers, dimensions):
+    plot_box(ax2, center, dim, color='blue', alpha=0.5)
 
 # Set plot limits and labels for the 3D plot
-ax2.set_xlim([-R, R])
-ax2.set_ylim([-R, R])
-ax2.set_zlim([-R, R])
+ax2.set_xlim([-R_cyl, R_cyl])
+ax2.set_ylim([-R_cyl, R_cyl])
+ax2.set_zlim([-H_cyl / 2, H_cyl / 2])
 ax2.set_xlabel("X")
 ax2.set_ylabel("Y")
 ax2.set_zlabel("Z")
-ax2.set_title("Initial (Red) and Optimized (Blue) Positions of Small Spheres within Large Sphere")
+ax2.set_title("Initial (Red) and Optimized (Blue) Positions of Small Boxes within Cylinder")
 
 plt.tight_layout()
 plt.show()
-
-# Print the optimized centers
-for i, center in enumerate(optimized_centers):
-    print(f"Optimized Center {i}:", center)
